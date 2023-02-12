@@ -119,7 +119,7 @@ _zsh_terraform_download_install() {
       curl -o "${destDir}/terraformer" -fsSL https://github.com/${TF_TRFORMER_RELEASE}/download/${version}/terraformer-all-${OSTYPE%-*}-${machine} || (_zsh_terraform_log $BOLD "red" "Error while downloading terraformer release" ; return)
       chmod +x "${destDir}/terraformer"
       echo ${version} > ${ZSH_TF_TRFORMER_VERSION_FILE}
-      ;;                
+      ;;
     *)
       _zsh_terraform_log $BOLD "red" "Unknown tool"
       return 1
@@ -152,9 +152,9 @@ _zsh_terraform_install() {
   # Install tflint
    _zsh_terraform_install_tool "tflint" ${TF_LINT_RELEASE}
   # Install terracognita
-   _zsh_terraform_install_tool "terracognita" ${TF_TRCOGNITA_RELEASE}   
+   _zsh_terraform_install_tool "terracognita" ${TF_TRCOGNITA_RELEASE}
   # Install terraformer
-   _zsh_terraform_install_tool "terraformer" ${TF_TRFORMER_RELEASE}      
+   _zsh_terraform_install_tool "terraformer" ${TF_TRFORMER_RELEASE}
   _zsh_terraform_log $NONE "blue" "#############################################"
 }
 
@@ -180,7 +180,7 @@ _update_zsh_terraform_tool() {
     fi
 }
 
-update_zsh_terraform() {
+update_zsh_terraform_tools() {
   _zsh_terraform_log $NONE "blue" "#############################################"
   _zsh_terraform_log $BOLD "blue" "Checking new version of Terraform tools..."
   # Update tfdocs
@@ -192,7 +192,7 @@ update_zsh_terraform() {
   # Update terracognita
   _update_zsh_terraform_tool "terracognita" ${ZSH_TF_TRCOGNITA_VERSION_FILE} ${TF_TRCOGNITA_RELEASE}
   # Update terraformer
-  _update_zsh_terraform_tool "terraformer" ${ZSH_TF_TRFORMER_VERSION_FILE} ${TF_TRFORMER_RELEASE}  
+  _update_zsh_terraform_tool "terraformer" ${ZSH_TF_TRFORMER_VERSION_FILE} ${TF_TRFORMER_RELEASE}
   _zsh_terraform_log $NONE "blue" "#############################################"
 }
 
@@ -271,7 +271,7 @@ _zsh_terraform_load_tool() {
     # Add the plugin bin directory path if it doesn't exist in $PATH.
     if [[ -z ${path[(r)$plugin_dir]} ]]; then
         path+=($plugin_dir)
-    fi      
+    fi
 }
 
 _zsh_terraform_load() {
