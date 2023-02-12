@@ -1,8 +1,9 @@
 #!/bin/zsh
 # Terraform plugin for zsh
 #
-# Author : Patrick Tavares <tavarespatrick01@gmail.com>
-#
+# Initial author : Patrick Tavares <tavarespatrick01@gmail.com>
+# Docs, Tflint, tfsec - initial
+# Andrei - added Terracognita, Terraformer
 
 ################################################################################
 # COMMONS
@@ -18,6 +19,8 @@ API_GITUB=https://api.github.com/repos
 TF_DOCS_RELEASE=terraform-docs/terraform-docs/releases
 TF_SEC_RELEASE=aquasecurity/tfsec/releases
 TF_LINT_RELEASE=terraform-linters/tflint/releases
+TF_TRCOGNITA_RELEASE=cycloidio/terracognita/releases
+TF_TRFORMER_RELEASE=GoogleCloudPlatform/terraformer/releases
 
 # Local plugin directory
 [[ -z "${ZSH_TF_TOOLS_HOME}" ]] && export ZSH_TF_TOOLS_HOME="${HOME}/.terrafom-tools"
@@ -25,6 +28,9 @@ TF_LINT_RELEASE=terraform-linters/tflint/releases
 ZSH_TF_DOCS_VERSION_FILE=${ZSH_TF_TOOLS_HOME}/version_tfdocs.txt
 ZSH_TF_SEC_VERSION_FILE=${ZSH_TF_TOOLS_HOME}/version_tfsec.txt
 ZSH_TF_LINT_VERSION_FILE=${ZSH_TF_TOOLS_HOME}/version_tflint.txt
+ZSH_TF_TRCOGNITA_VERSION_FILE=${ZSH_TF_TOOLS_HOME}/version_terracognita.txt
+ZSH_TF_TRFORMER_VERSION_FILE=${ZSH_TF_TOOLS_HOME}/version_terraformer.txt
+
 
 ################################################################################
 # Install tools Functions
@@ -83,7 +89,7 @@ _zsh_terraform_download_install() {
       echo ${version} > ${ZSH_TF_DOCS_VERSION_FILE}
       ;;
     tfsec)
-      curl -o "${destDir}/tfsec" -fsSL https://github.com/${TF_SEC_RELEASE}/download/${version}/tfsec-${OSTYPE%-*}-${machine} || (_zsh_terraform_log $BOLD "red" "Error while downloading terraform-docs release" ; return)
+      curl -o "${destDir}/tfsec" -fsSL https://github.com/${TF_SEC_RELEASE}/download/${version}/tfsec-${OSTYPE%-*}-${machine} || (_zsh_terraform_log $BOLD "red" "Error while downloading tfsec release" ; return)
       chmod +x "${destDir}/tfsec"
       echo ${version} > ${ZSH_TF_SEC_VERSION_FILE}
       ;;
@@ -93,6 +99,27 @@ _zsh_terraform_download_install() {
       rm -rf ${destDir}/tmp.zip
       echo ${version} > ${ZSH_TF_LINT_VERSION_FILE}
       ;;
+    terracognita)
+      #curl -L https://github.com/cycloidio/terracognita/releases/latest/download/terracognita-linux-amd64.tar.gz -o terracognita-linux-amd64.tar.gz
+      #tar -xf terracognita-linux-amd64.tar.gz
+      #chmod u+x terracognita-linux-amd64
+      #sudo mv terracognita-linux-amd64 /usr/local/bin/terracognita
+      curl -o "${destDir}/tmp.tar.gz" -fsSL https://github.com/${TF_TRCOGNITA_RELEASE}/download/${version}/terracognita-${OSTYPE%-*}-${machine}.tar.gz || (_zsh_terraform_log $BOLD "red" "Error while downloading terracognita release" ; return)
+      tar xzf ${destDir}/tmp.tar.gz -C ${destDir} 2>&1 > /dev/null
+      rm -rf ${destDir}/*.tar.gz
+      mv ${destDir}/terracognita-${OSTYPE%-*}-${machine} ${destDir}/terracognita
+      chmod +x "${destDir}/terracognita"
+      echo ${version} > ${ZSH_TF_TRCOGNITA_VERSION_FILE}
+      ;;
+    terraformer)
+      #export PROVIDER={all,google,aws,kubernetes}
+      #curl -LO https://github.com/GoogleCloudPlatform/terraformer/releases/download/$(curl -s https://api.github.com/repos/GoogleCloudPlatform/terraformer/releases/latest | grep tag_name | cut -d '"' -f 4)/terraformer-${PROVIDER}-linux-amd64
+      #chmod +x terraformer-${PROVIDER}-linux-amd64
+      #sudo mv terraformer-${PROVIDER}-linux-amd64 /usr/local/bin/terraformer
+      curl -o "${destDir}/terraformer" -fsSL https://github.com/${TF_TRFORMER_RELEASE}/download/${version}/terraformer-all-${OSTYPE%-*}-${machine} || (_zsh_terraform_log $BOLD "red" "Error while downloading terraformer release" ; return)
+      chmod +x "${destDir}/terraformer"
+      echo ${version} > ${ZSH_TF_TRFORMER_VERSION_FILE}
+      ;;                
     *)
       _zsh_terraform_log $BOLD "red" "Unknown tool"
       return 1
@@ -124,6 +151,10 @@ _zsh_terraform_install() {
    _zsh_terraform_install_tool "tfsec" ${TF_SEC_RELEASE}
   # Install tflint
    _zsh_terraform_install_tool "tflint" ${TF_LINT_RELEASE}
+  # Install terracognita
+   _zsh_terraform_install_tool "terracognita" ${TF_TRCOGNITA_RELEASE}   
+  # Install terraformer
+   _zsh_terraform_install_tool "terraformer" ${TF_TRFORMER_RELEASE}      
   _zsh_terraform_log $NONE "blue" "#############################################"
 }
 
@@ -152,12 +183,16 @@ _update_zsh_terraform_tool() {
 update_zsh_terraform() {
   _zsh_terraform_log $NONE "blue" "#############################################"
   _zsh_terraform_log $BOLD "blue" "Checking new version of Terraform tools..."
-   # Update tfdocs
+  # Update tfdocs
   _update_zsh_terraform_tool "tfdocs" ${ZSH_TF_DOCS_VERSION_FILE} ${TF_DOCS_RELEASE}
   # Update tfsec
   _update_zsh_terraform_tool "tfsec" ${ZSH_TF_SEC_VERSION_FILE} ${TF_SEC_RELEASE}
   # Update tflint
   _update_zsh_terraform_tool "tflint" ${ZSH_TF_LINT_VERSION_FILE} ${TF_LINT_RELEASE}
+  # Update terracognita
+  _update_zsh_terraform_tool "terracognita" ${ZSH_TF_TRCOGNITA_VERSION_FILE} ${TF_TRCOGNITA_RELEASE}
+  # Update terraformer
+  _update_zsh_terraform_tool "terraformer" ${ZSH_TF_TRFORMER_VERSION_FILE} ${TF_TRFORMER_RELEASE}  
   _zsh_terraform_log $NONE "blue" "#############################################"
 }
 
@@ -244,6 +279,8 @@ _zsh_terraform_load() {
     _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/tfdocs
     _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/tfsec
     _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/tflint
+    _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/terraformer
+    _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/terracognita
 }
 
 # install exa if it isnt already installed
