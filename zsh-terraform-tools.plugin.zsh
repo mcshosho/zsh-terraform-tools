@@ -283,12 +283,12 @@ _zsh_terraform_load() {
     _zsh_terraform_load_tool ${ZSH_TF_TOOLS_HOME}/terracognita
 }
 
-# install exa if it isnt already installed
+# install - if it isnt already installed
 #[[ ! -f "${ZSH_TF_TOOLS_HOME}/version_*.txt" ]] && _zsh_terraform_load
 [[ "$(ls -1 ${ZSH_TF_TOOLS_HOME}/version_*.txt  2>/dev/null | wc -l)" -eq 0 ]] && _zsh_terraform_install
 
 
-# load exa if it is installed
+# load - if it is installed
 [[ "$(ls -1 ${ZSH_TF_TOOLS_HOME}/version_*.txt  2>/dev/null | wc -l)" -gt 0 ]] && _zsh_terraform_load
 
 unset -f _zsh_terraform_install _zsh_terraform_load _zsh_terraform_load_tool
